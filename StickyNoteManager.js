@@ -36,7 +36,6 @@ function handleNoteSelection(noteId) {
   } else {
     console.log('There', selectedNoteId, noteId);
     // Connect the first selected note with the second
-    // graphManager.connectNotes(selectedNoteId, noteId);
     drawConnectionBetweenNotes(selectedNoteId, noteId); // Implement this
     selectedNoteId = null; // Reset selection
   }
@@ -50,27 +49,35 @@ class StickyNoteManager {
     this.noteCounter = 0;
     this.connections = {}; // Track connections between notes
     this.initEventListeners();
+    this.graphManager = new GraphManager();
   }
   generateNoteId() {
     return `note-${this.noteCounter++}`;
   }
   createStickyNoteElement(pageX, pageY) {    
-  const noteId = this.generateNoteId(); // Generate a unique ID
+    const noteId = this.generateNoteId(); // Generate a unique ID
     const note = $('<div class="sticky-note" id="' + noteId + '"></div>').css({
       left: pageX + 'px',
       top: pageY + 'px'
     });
+    // const noteHeader = $('<div class="sticky-note-header"></div>');
+    const noteIdElement = $('<div class="sticky-note-id"></div>').text(noteId);
+
+    // noteHeader.append(noteIdElement);
     const content = this.createContentArea();
     const toolbar = this.createFormattingToolbar();
     const deleteButton = this.createDeleteButton(noteId)
     const lineStartPoint = this.createLineStartPoint();
 
-    note.append(content, toolbar, lineStartPoint);; // Pass the noteId
-    note.append(deleteButton);
+
+    // noteHeader.append(noteIdElement).append(deleteButton);
+    note.append(noteIdElement, deleteButton);
+    note.append(content, toolbar, lineStartPoint, );; // Pass the noteId
     $('body').append(note);
+    this.setupExploreButton(noteId);
 
     this.makeStickyNoteDraggable(note);
-    // graphManager.addNote(noteId); // Register the note in the graph
+    this.graphManager.addNote(noteId); // Register the note in the graph
     console.log('create', noteId);
     note.on('click', function(e) {
       e.stopPropagation(); // Prevent triggering body's click event
@@ -78,6 +85,46 @@ class StickyNoteManager {
     });
 
     return note;
+  }
+  
+
+  highlightConnectedNotes(noteId) {
+        // First, reset the results container
+        $('#dfs-output').text('');
+
+        // Initialize an array to hold the results
+        let results = [];
+
+      // First, remove the highlight class from all notes to reset the state
+      $('.sticky-note').removeClass('note-highlighted note-highlighted-start');
+
+      // Highlight the starting note differently if desired
+      $('#' + noteId).addClass('note-highlighted-start');
+
+      // Perform DFS from the selected noteId and highlight connected notes
+      this.graphManager.dfs(noteId, (connectedNoteId) => {
+          // Skip highlighting the start note if it's being highlighted differently
+          if (connectedNoteId !== noteId) {
+              $('#' + connectedNoteId).addClass('note-highlighted');
+              results.push(connectedNoteId);
+          }
+      });
+
+      
+    // Update the container with the results
+    $('#dfs-output').text(results.join(', '));
+  }
+
+
+
+  setupExploreButton(noteId) {
+      const exploreButton = $('<button>Explore Connected Notes</button>');
+      exploreButton.on('click', () => {
+          this.highlightConnectedNotes(noteId);
+      });
+      // Make sure the element exists in the DOM
+      console.log('Appending to:', noteId, $('#' + noteId));
+      $('#' + noteId).append(exploreButton);
   }
 
   createContentArea() { 
@@ -140,6 +187,8 @@ class StickyNoteManager {
     if (!this.connections[targetId]) {
       this.connections[targetId] = [];
     }
+    this.graphManager.connectNotes(sourceId, targetId);
+    this.graphManager.connectNotes(targetId, sourceId);
 
     // Add the connection
     this.connections[sourceId].push({ targetId: targetId, line: lineElement });
@@ -186,6 +235,10 @@ class StickyNoteManager {
         return true;
       });
     });
+
+    
+    // Remove the note from the graph data structure
+    this.graphManager.removeNote(noteId);
   
     // Remove the note element from the DOM
     $('#' + noteId).remove();

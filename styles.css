@@ -13,6 +13,14 @@ body {
   padding: 10px;
   position: absolute;
 }
+
+.sticky-note-id {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white; /* Make the text color white */
+}
 .sticky-note::before {
   content: ''; /* Add the toolbar section */
   display: block;
@@ -63,6 +71,7 @@ body {
   line-height: 1.5;
   overflow-y: auto;
 }
+
 .formatting-toolbar {
   user-select: none;
   display: flex;
@@ -106,4 +115,25 @@ body {
 
 .sticky-note.selected {
   border: 2px solid #4285F4; /* Example highlight color */
+}
+
+.note-highlighted {
+  border: 2px solid #4CAF50; /* Example: Green border for connected notes */
+}
+
+.note-highlighted-start {
+  border: 2px solid #FF4500; /* Example: Orange border for the starting note */
+}
+
+
+
+.explore-button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  padding: 10px; /* Padding around the text */
+  margin-top: 10px; /* Space above the button */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  display: block; /* Block display to fill container */
 }

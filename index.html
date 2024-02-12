@@ -10,10 +10,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="StickyNoteManager.js" defer></script>
+  <script src="graph.js"></script>
   <script src="GraphManager.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
   <!-- The body remains empty as elements will be dynamically injected by JavaScript -->
 </body>
+<div id="dfs-results" style="position: fixed; bottom: 0; width: 100%; background: #f8f9fa; padding: 10px; box-shadow: 0 -1px 4px rgba(0,0,0,0.1);">
+  <strong>DFS Results:</strong> <span id="dfs-output"></span>
+</div>
 </html>

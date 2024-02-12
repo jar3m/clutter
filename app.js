@@ -1,4 +1,3 @@
-//let graphManager = new GraphManager();
 let Sticky = new StickyNoteManager();
 $(document).ready(function() {
   // Sticky = new StickyNoteManager();
